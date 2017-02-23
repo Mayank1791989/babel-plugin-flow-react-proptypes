@@ -302,7 +302,32 @@ module.exports = function flowReactPropTypes(babel) {
             path.insertAfter(variableDeclarationAst);
           });
         }
-      }
+      },
+      // Patch: add generatorFunc
+      CallExpression(path, state) {
+        if (suppress) { return; }
+        const { generatorFuncName } = state.opts;
+        if (!generatorFuncName) { return; }
+
+        const { node } = path;
+        if(!t.isIdentifier(node.callee, { name: generatorFuncName })) { return; }
+
+        const genFuncNode = node.arguments[0];
+        if (!t.isArrowFunctionExpression(genFuncNode)) {
+          return;
+        }
+
+        const paramNode = genFuncNode.params[0];
+        if (!paramNode || !paramNode.typeAnnotation) {
+          return;
+        }
+
+        const typeNode = paramNode.typeAnnotation.typeAnnotation;
+        const props = getPropsForTypeAnnotation(typeNode);
+        if (props) {
+          path.replaceWith(makePropTypesAst(props));
+        }
+      },
     }
   };
 };

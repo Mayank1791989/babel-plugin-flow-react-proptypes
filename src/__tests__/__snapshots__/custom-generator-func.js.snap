@@ -1,0 +1,10 @@
+exports[`test generate props if generatorFunc enabled 1`] = `
+"\"use strict\";
+
+var FooPropTypes = {
+  bar: require(\"react\").PropTypes.shape({
+    a: require(\"react\").PropTypes.string.isRequired,
+    b: require(\"react\").PropTypes.number.isRequired
+  }).isRequired
+};"
+`;
