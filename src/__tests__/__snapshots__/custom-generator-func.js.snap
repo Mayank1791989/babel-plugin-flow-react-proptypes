@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generate props if generatorFunc enabled 1`] = `
+"\\"use strict\\";
+
+var FooPropTypes = {
+  bar: require(\\"prop-types\\").shape({
+    a: require(\\"prop-types\\").string.isRequired,
+    b: require(\\"prop-types\\").number.isRequired
+  }).isRequired
+};"
+`;

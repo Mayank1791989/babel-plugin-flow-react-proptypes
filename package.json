@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-flow-react-proptypes",
-  "version": "6.1.0",
+  "version": "6.1.0-patch.1",
   "description": "converts flow types to react proptypes",
   "main": "lib/index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/brigand/babel-plugin-flow-react-proptypes.git"
+    "url": "git+https://github.com/mayank1791989/babel-plugin-flow-react-proptypes.git"
   },
   "keywords": [
     "react",
@@ -24,12 +24,12 @@
     "babel-plugin",
     "es6"
   ],
-  "author": "Frankie Bagnardi <f.bagnardi@gmail.com>",
+  "author": "Mayank Agarwal <mayank1791989@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/brigand/babel-plugin-flow-react-proptypes/issues"
+    "url": "https://github.com/mayank1791989/babel-plugin-flow-react-proptypes/issues"
   },
-  "homepage": "https://github.com/brigand/babel-plugin-flow-react-proptypes#readme",
+  "homepage": "https://github.com/mayank1791989/babel-plugin-flow-react-proptypes#readme",
   "files": [
     "lib/*.js"
   ],
