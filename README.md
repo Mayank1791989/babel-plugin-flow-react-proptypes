@@ -1,10 +1,7 @@
 A babel plugin to generate React PropTypes definitions from Flow type declarations.
 
-[![build status](https://img.shields.io/travis/brigand/babel-plugin-flow-react-proptypes/master.svg?style=flat-square)](https://travis-ci.org/brigand/babel-plugin-flow-react-proptypes)
-[![Coverage Status](https://coveralls.io/repos/github/brigand/babel-plugin-flow-react-proptypes/badge.svg?branch=master)](https://coveralls.io/github/brigand/babel-plugin-flow-react-proptypes?branch=master)
-[![npm version](https://img.shields.io/npm/v/babel-plugin-flow-react-proptypes.svg?style=flat-square)](https://www.npmjs.com/package/babel-plugin-flow-react-proptypes)
-[![npm downloads](https://img.shields.io/npm/dm/babel-plugin-flow-react-proptypes.svg?style=flat-square)](https://www.npmjs.com/package/babel-plugin-flow-react-proptypes)
-[![Dependency Status](https://img.shields.io/david/brigand/babel-plugin-flow-react-proptypes.svg?style=flat-square)](https://david-dm.org/brigand/babel-plugin-flow-react-proptypes)
+[![build status](https://img.shields.io/travis/Mayank1791989/babel-plugin-flow-react-proptypes/master.svg?style=flat-square)](https://travis-ci.org/Mayank1791989/babel-plugin-flow-react-proptypes)
+[![npm version](https://img.shields.io/npm/v/@playlyfe/babel-plugin-flow-react-proptypes.svg?style=flat-square)](https://www.npmjs.com/package/@playlyfe/babel-plugin-flow-react-proptypes)
 
 ## Example
 
@@ -188,3 +185,21 @@ If you already have other plugins in plugins section. It is important to place
 
 If you're using the 'react' or 'flow' presets, you don't need to do anything special.
 
+## Custom generator function
+```js
+// .babelrc
+{
+  "presets": ["..."],
+  "plugins": ["flow-react-proptypes", { "generatorFuncName": "toPropTypes" }]
+}
+
+// code
+type FooProps = {
+  bar: {
+    a: string,
+    b: number,
+  }
+};
+
+const FooPropTypes = toPropTypes((t: FooProps) => t);
+```

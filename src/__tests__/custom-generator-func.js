@@ -1,5 +1,5 @@
-var babel = require('babel-core');
-var content = `
+const babel = require('babel-core');
+const content = `
 type FooProps = {
   bar: {
     a: string,
@@ -11,7 +11,7 @@ const FooPropTypes = toPropTypes((t: FooProps) => t);
 `;
 
 it('generate props if generatorFunc enabled', () => {
-  var res = babel.transform(content, {
+  const res = babel.transform(content, {
     babelrc: false,
     presets: ['es2015', 'stage-1', 'react'],
     plugins: [

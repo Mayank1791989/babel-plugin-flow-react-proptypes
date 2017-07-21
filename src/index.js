@@ -324,14 +324,21 @@ module.exports = function flowReactPropTypes(babel) {
           });
         }
       },
+
       // Patch: add generatorFunc
       CallExpression(path, state) {
-        if (suppress) { return; }
+        if (suppress) {
+          return;
+        }
         const { generatorFuncName } = state.opts;
-        if (!generatorFuncName) { return; }
+        if (!generatorFuncName) {
+          return;
+        }
 
         const { node } = path;
-        if(!t.isIdentifier(node.callee, { name: generatorFuncName })) { return; }
+        if(!t.isIdentifier(node.callee, { name: generatorFuncName })) {
+          return;
+        }
 
         const genFuncNode = node.arguments[0];
         if (!t.isArrowFunctionExpression(genFuncNode)) {
@@ -346,7 +353,7 @@ module.exports = function flowReactPropTypes(babel) {
         const typeNode = paramNode.typeAnnotation.typeAnnotation;
         const props = getPropsForTypeAnnotation(typeNode);
         if (props) {
-          path.replaceWith(makePropTypesAst(props));
+          path.replaceWith(makePropTypesAstForPropTypesAssignment(props));
         }
       },
     }
