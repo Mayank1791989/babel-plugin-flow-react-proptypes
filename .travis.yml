@@ -1,8 +1,15 @@
 language: node_js
 node_js:
-  - "6"
+- '8'
 script:
-  - npm run lint
-  - npm run test
-  - npm run coveralls
-  - npm run build
+- npm run lint
+- npm run test
+- npm run build
+deploy:
+  provider: npm
+  email: mayank1791989@gmail.com
+  api_key:
+    secure: lS5ix4/ruqdhgqVS/KYTiazYisw5Kji68islVj9wXCZcZr1qKJdm0SXjtpdZFghiAhzCOKir10W//bsYUPHjG/aOYXcD2b9upmbfHCZOq0H8y0lVYILXHgzuYaHjbqL+1w1QQmaZ9558zvwq+Rmt315tdEkSCEJ5Y8Orjq9qp4D9rZSazE94oPnj/XMycJXEf1erEZ8qrE93nWdE6sj6KUeX/kHxXYguvzqqX4zu5/9mCf0oZnMPpuThpFr+8xQq3l1Ln9hldjVtN96zGycqlp6FNSIH2AhoqT8hN6MTRzAgPg6ficyo+rq2pYGH8sFvwlS3S+H6s+gJQ3lhLTcRZwsteBfhPyX5Gr0HErfryv1tErcYWkUraPTTWncKKSZNowoVJtb6ZynwXzU//1In/oouXdDqZLlLKAyidQ+HuSblV23A3xlgRdtKjddFH+hjt9YlafyCc1BVtFcLE95H0pMGRinZm1eSz45GIbUTj6vn3YIg5I2oN5q9v0dZzM8z/BIlj3jvcJdoQS3gAxu8P6QmwXHwil1KX/JdHaacS/+9ZKCMzpsGbZ34PFcgKFIbeb5sxpf2fcrZcHRyuhxEBeW28grccgSta56tPFdZfgEpHj4+Q20jQYitqLOz51HTaZZsW7yYvJhoIKwHoOOd1kC2UBwRSy8d/nu/xATGTCI=
+  on:
+    tags: true
+    repo: Mayank1791989/babel-plugin-flow-react-proptypes
