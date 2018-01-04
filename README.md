@@ -116,6 +116,7 @@ Foo.propTypes = {
     )
   ).isRequired,
 };
+
 exports.default = Foo;
 ```
 
@@ -133,7 +134,7 @@ npm install --save-dev babel-plugin-flow-react-proptypes
 ```
 
 Also install the prop-types package. This is required for React `>=15.5.0`. For earlier React versions
-you can use version `0.21.0` of this plugin, which doesn't use the prop-types pacakge.
+you can use version `0.21.0` of this plugin, which doesn't use the prop-types package.
 
 ```sh
 npm install --save prop-types
@@ -161,6 +162,44 @@ To save some bytes in production, you can also only enable it in development mod
 }
 ```
 
+## useStatic
+
+When combining it with some plugins, such as react-transform (also used by react-native in development mode), the way we normally add `propTypes` doesn't work. You can enable the `useStatic` option to cause us to generate code like:
+
+```js
+class C extends Component<Props> {
+  static propTypes = { x: require('prop-types').string }
+}
+```
+
+Add the option to your babel config.
+
+```json
+{
+  "presets": ["..."],
+  "plugins": [["flow-react-proptypes", { "useStatic": true }]]
+}
+```
+
+## deadCode
+
+The deadCode option (disabled by default) adds a predicate to the code allowing both your propTypes definitions and potentially the
+entire 'prop-types' package to be excluded in certain builds. Unlike specifying this plugin in the development env, mentioned above,
+this also works for packages published to npm.
+
+```json
+  "plugins": [["flow-react-proptypes", { "deadCode": true }]]
+```
+
+The value of `true` is short for `process.env.NODE_ENV === 'production'`. You can alternatively pass any JavaScript expression. If the expression
+returns a truthy value, then the propTypes will be removed. This works because e.g. webpack will subsitute the value of `process.env.NODE_ENV` with `'production'`, resulting in the condition being `'production' === 'production'`, and then a minifer sees that the code we're generating can't be executed, and strips it, and the `require('prop-types')` code out of the final bundle.
+
+Example of specifying a custom expression:
+
+```json
+  "plugins": [["flow-react-proptypes", { "deadCode": "__PROD__" }]]
+```
+
 ## Suppression
 This plugin isn't perfect. You can disable it for an entire file with this directive (including quotes):
 
@@ -168,12 +207,12 @@ This plugin isn't perfect. You can disable it for an entire file with this direc
 'no babel-plugin-flow-react-proptypes';
 ```
 
-Specifically for react-native you can disable this for files in `node_modules` with the `ignoreNodeModules` config option.
+Specifically for react-native you can disable this for files in `node_modules` with the `ignoreNodeModules` config option. In react-native, you'll also want the `useStatic` option.
 
 ```json
 {
   "presets": ["..."],
-  "plugins": [["flow-react-proptypes", {"ignoreNodeModules": true}]]
+  "plugins": [["flow-react-proptypes", { "ignoreNodeModules": true }]]
 }
 ```
 
@@ -184,6 +223,32 @@ If you already have other plugins in plugins section. It is important to place
 - `transform-flow-strip-types`
 
 If you're using the 'react' or 'flow' presets, you don't need to do anything special.
+
+## Minimizing production bundle size
+In production, omitting props and minimizing bundle size can be done with the additon of two things:
+1. Add the [transform-react-remove-prop-types](https://github.com/oliviertassinari/babel-plugin-transform-react-remove-prop-types) plugin
+2. Omit exported types to allow for dead code pruning
+
+There are cases where a library wishes to `export type` making types available in `*.js.flow` shadow files,
+but these may have no other purpose during runtime.  If you wish to omit the corresponding export of
+the generated flow types, using this option with the
+[transform-react-remove-prop-types](https://github.com/oliviertassinari/babel-plugin-transform-react-remove-prop-types)
+plugin will allow for the smallest production bundle size.
+
+An example snippet from a `.babelrc`:
+```json
+"production": {
+  "plugins": [
+    ["transform-react-remove-prop-types", {
+      "mode": "wrap",
+      "plugins": [
+        ["babel-plugin-flow-react-proptypes", {"omitRuntimeTypeExport": true}],
+        "babel-plugin-transform-flow-strip-types",
+      ]
+    }]
+  ]
+}
+```
 
 ## Custom generator function
 ```js
@@ -202,4 +267,3 @@ type FooProps = {
 };
 
 const FooPropTypes = toPropTypes((t: FooProps) => t);
-```

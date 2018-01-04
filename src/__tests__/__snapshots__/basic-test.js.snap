@@ -15,10 +15,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== \\"function
 
 var React = require('react');
 
+var babelPluginFlowReactPropTypes_proptype_Qux = {
+  baz: require('prop-types').oneOf(['literal']).isRequired
+};
 if (typeof exports !== 'undefined') Object.defineProperty(exports, 'babelPluginFlowReactPropTypes_proptype_Qux', {
-  value: {
-    baz: require('prop-types').oneOf(['literal']).isRequired
-  },
+  value: babelPluginFlowReactPropTypes_proptype_Qux,
   configurable: true
 });
 
@@ -43,8 +44,16 @@ Foo.propTypes = {
   a_generic_object: require('prop-types').object.isRequired,
   array_of_strings: require('prop-types').arrayOf(require('prop-types').string).isRequired,
   instance_of_Bar: typeof Bar === 'function' ? require('prop-types').instanceOf(Bar).isRequired : require('prop-types').any.isRequired,
-  anything: require('prop-types').any.isRequired,
-  mixed: require('prop-types').any.isRequired,
+  anything: function anything(props, propName, componentName) {
+    if (!Object.prototype.hasOwnProperty.call(props, propName)) {
+      throw new Error('Prop \`' + propName + '\` has type \\\\'any\\\\' or \\\\'mixed\\\\', but was not provided to \`' + componentName + '\`. Pass undefined or any other value.');
+    }
+  },
+  mixed: function mixed(props, propName, componentName) {
+    if (!Object.prototype.hasOwnProperty.call(props, propName)) {
+      throw new Error('Prop \`' + propName + '\` has type \\\\'any\\\\' or \\\\'mixed\\\\', but was not provided to \`' + componentName + '\`. Pass undefined or any other value.');
+    }
+  },
   one_of: require('prop-types').oneOf(['QUACK', 'BARK', 5]).isRequired,
   one_of_type: require('prop-types').oneOfType([require('prop-types').number, require('prop-types').string]).isRequired,
   nested_object_level_1: require('prop-types').shape({

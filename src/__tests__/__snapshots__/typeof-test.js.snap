@@ -7,11 +7,16 @@ var ActionTypes = {
   JUMP_TO: 'react-native/NavigationExperimental/tabs-jumpTo'
 };
 
-if (typeof exports !== 'undefined') Object.defineProperty(exports, 'babelPluginFlowReactPropTypes_proptype_JumpToAction', {
-  value: {
-    type: require('prop-types').any.isRequired,
-    index: require('prop-types').number.isRequired
+var babelPluginFlowReactPropTypes_proptype_JumpToAction = {
+  type: function type(props, propName, componentName) {
+    if (!Object.prototype.hasOwnProperty.call(props, propName)) {
+      throw new Error('Prop \`' + propName + '\` has type \\\\'any\\\\' or \\\\'mixed\\\\', but was not provided to \`' + componentName + '\`. Pass undefined or any other value.');
+    }
   },
+  index: require('prop-types').number.isRequired
+};
+if (typeof exports !== 'undefined') Object.defineProperty(exports, 'babelPluginFlowReactPropTypes_proptype_JumpToAction', {
+  value: babelPluginFlowReactPropTypes_proptype_JumpToAction,
   configurable: true
 });"
 `;

@@ -27,6 +27,14 @@ const exactTemplate = template(`
 }
 `);
 
+const anyTemplate = template(`
+(props, propName, componentName) => {
+  if (!Object.prototype.hasOwnProperty.call(props, propName)) {
+    throw new Error(\`Prop \\\`\${propName}\\\` has type 'any' or 'mixed', but was not provided to \\\`\${componentName\}\\\`. Pass undefined or any other value.\`);
+  }
+}
+`);
+
 /**
  * Top-level function to generate prop-types AST.
  *
@@ -40,17 +48,20 @@ const exactTemplate = template(`
  * @returns {*} AST expression always returning an object.
  */
 export function makePropTypesAstForPropTypesAssignment(propTypeData) {
+  let node = null;
   if (propTypeData.type === 'shape-intersect-runtime') {
     // For top-level usage, e.g. Foo.proptype, return
     // an expression returning an object.
-    return makeObjectMergeAstForShapeIntersectRuntime(propTypeData);
+    node = makeObjectMergeAstForShapeIntersectRuntime(propTypeData);
   }
   else if (propTypeData.type === 'shape') {
-    return makeObjectAstForShape(propTypeData);
+    node = makeObjectAstForShape(propTypeData);
   }
   else if (propTypeData.type === 'raw') {
-    return makeObjectAstForRaw(propTypeData);
+    node = makeObjectAstForRaw(propTypeData);
   }
+
+  return node;
 };
 
 
@@ -175,11 +186,15 @@ function makeObjectAstForShape(propTypeData) {
   // TODO: this is almost duplicated with the shape handling below;
   // but this code does not generate AST for a shape function,
   // but returns the AST for the object instead.
-  const rootProperties = propTypeData.properties.map(({key, value}) => {
-    return t.objectProperty(
+  const rootProperties = propTypeData.properties.map(({key, value, leadingComments}) => {
+    const node = t.objectProperty(
       t.identifier(key),
       makePropType(value)
     );
+    if (leadingComments) {
+      node.leadingComments = leadingComments;
+    }
+    return node;
   });
   return t.objectExpression(rootProperties);
 }
@@ -257,9 +272,19 @@ function makePropType(data, isExact) {
   let node = makePropTypeImportNode();
   let markFullExpressionAsRequired = true;
 
-  if (method === 'any' || method === 'string' || method === 'number' || method === 'bool' || method === 'object' ||
+  if (method === 'string' || method === 'number' || method === 'bool' || method === 'object' ||
       method === 'array' || method === 'func' || method === 'node') {
     node = t.memberExpression(node, t.identifier(method));
+  }
+  else if (method === 'any') {
+    markFullExpressionAsRequired = false;
+
+    if (data.isRequired) {
+      node = anyTemplate().expression;
+    }
+    else {
+      node = t.memberExpression(node, t.identifier(method));
+    }
   }
   else if (method === 'raw') {
     markFullExpressionAsRequired = false;
@@ -289,8 +314,12 @@ function makePropType(data, isExact) {
     node = t.conditionalExpression(functionCheckNode, variableNode, shapeNode);
   }
   else if (method === 'shape') {
-    const shapeObjectProperties = data.properties.map(({key, value}) => {
-      return t.objectProperty(t.identifier(key), makePropType(value));
+    const shapeObjectProperties = data.properties.map(({key, value, leadingComments}) => {
+      const node = t.objectProperty(t.identifier(key), makePropType(value));
+      if (leadingComments) {
+        node.leadingComments = leadingComments;
+      }
+      return node;
     });
     if (isExact || data.isExact) {
       shapeObjectProperties.push(
@@ -328,6 +357,20 @@ function makePropType(data, isExact) {
     node = t.callExpression(
       t.memberExpression(node, t.identifier('oneOfType')),
       [t.arrayExpression(data.options.map(item => makePropType(item)))]
+    );
+  }
+  else if (method === 'reference') {
+    const pp = data.propertyPath.slice();
+    let valueNode = t.identifier(pp.shift());
+    while (pp.length) {
+      valueNode = t.memberExpression(valueNode, t.identifier(pp.shift()));
+    }
+    node = t.callExpression(
+      t.memberExpression(
+        node,
+        t.identifier('shape'),
+      ),
+      [valueNode],
     );
   }
   else if (method === 'void') {
