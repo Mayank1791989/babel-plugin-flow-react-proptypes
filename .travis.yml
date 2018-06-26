@@ -1,8 +1,22 @@
 language: node_js
+
 node_js:
-  - "6"
+- '8'
+
 script:
-  - npm run lint
-  - npm run test
-  - npm run coveralls
-  - npm run build
+- yarn lint
+- yarn test
+
+jobs:
+  include:
+  - stage: release
+    node_js: '8'
+    # dont run test cases again in release step
+    deploy:
+      provider: npm
+      email: mayank1791989@gmail.com
+      skip_cleanup: true
+      api_key:
+        secure: KekmrXjFEhfvdN+6L/8aTTMxg4LFnAhIJDwWsO+CzmVox5zCciJWeSeg8AIGrYb7sjt39f1kqFEWdTDVb7wzFflnl2IdaPtaWrRrPJPC2sU3+qAQ13NBU4O7ac/A//Rlw2klvvm9bw9ggGkIDYa3YQXBPTVnPaQEwE60Eln1fSNWV6iPw00H+iNqUTURyZv/w5xsYrC2bRcT9XzZkVlp2ZDimp4Icx+vFnmXXSi9z6Yj6cKy0E/eSSMV2ZdoPF9GKEtwlsKzbL4S8aNcaI4bkPC6lUcixTwOUWIiim6kB8oKZt2I7100c1NnxQs+k44JN0ByumG+tvGu8lVYyHyGtJQjepOGUczODw8E/v9/yXeWwO7hJn64aP/dapKX/xxAlHeNzoc2kSamHovtuASkuvYAt+Vmp7HXGU5bdTUH9UKFI8UfDmNnUjNZ9y9CPLiB4ZpN7YH79Ce4izzAiH5mWs/OMURwykBTWwmLi6+wwxgdjcbPM/5+XySZkmkYAjNtA1X3Q8DXbVHOnf+m9joVdf+xVYR7ngGbhTJas7/QwzrKF7tLlRUXMppkL6a4MOd6L+HuLhZgcBnyeeFoM+zCsVNtvMtE/Xwy8MXPJJSTcx1ZpwllQOrhKMWl64Q6cqB0PRh8QAhYEio30KsvHAeaxGMkMtEZKtqPVUDRibVMKU8=
+      on:
+        tags: true

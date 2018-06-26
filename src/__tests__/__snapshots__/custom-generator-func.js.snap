@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generate props if generatorFunc enabled 1`] = `
+"\\"use strict\\";
+
+var _propTypes = require(\\"prop-types\\");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var FooPropTypes = {
+  bar: _propTypes2.default.shape({
+    a: _propTypes2.default.string.isRequired,
+    b: _propTypes2.default.number.isRequired
+  }).isRequired
+};"
+`;
