@@ -536,7 +536,7 @@ module.exports = function flowReactPropTypes(babel) {
         const propTypes = convertNodeToPropTypes(path.node);
         internalTypes[typeAliasName] = propTypes;
       },
-      "ClassExpression|ClassDeclaration"(path) {
+      "ClassExpression|ClassDeclaration"(path, state) {
         if (opts.noStatic && path.node.type === 'ClassExpression') return;
 
         if (path.node[SKIP]) return;
@@ -573,7 +573,7 @@ module.exports = function flowReactPropTypes(babel) {
             return;
           }
 
-          if (bodyNode && bodyNode.key.name === 'context' && bodyNode.typeAnnotation) {
+          if (bodyNode && bodyNode.key.name === 'context' && bodyNode.typeAnnotation && !state.opts.disableContextTypes) {
             const annotation = bodyNode.typeAnnotation.typeAnnotation;
             const context = getPropsForTypeAnnotation(annotation);
             if (!context) {
@@ -603,7 +603,7 @@ module.exports = function flowReactPropTypes(babel) {
         }
 
         const thirdSuperParam = getContextTypeParam(path.node);
-        if (thirdSuperParam && thirdSuperParam.type === 'GenericTypeAnnotation') {
+        if (thirdSuperParam && thirdSuperParam.type === 'GenericTypeAnnotation' && !state.opts.disableContextTypes) {
           const typeAliasName = thirdSuperParam.id.name;
           if (typeAliasName === 'Object') return;
           const props = internalTypes[typeAliasName] || (importedTypes[typeAliasName] && importedTypes[typeAliasName].accessNode);
