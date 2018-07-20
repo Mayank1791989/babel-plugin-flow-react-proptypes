@@ -665,20 +665,24 @@ module.exports = function flowReactPropTypes(babel) {
             if (!t.isIdentifier(spec.local)) continue;
 
             const imported = importedTypes[spec.local.name];
-            if (!imported) continue;
-
-            if (spec.local.name !== spec.exported.name) {
-              // TODO: handle this properly
-              continue;
+            if (imported)  {
+              if (spec.local.name === spec.exported.name) {
+                addExportTypeDecl(path, getExportNameForType(spec.local.name), imported.accessNode);
+              }
+              // TODO: handle case when name not same
             }
-
-            addExportTypeDecl(path, getExportNameForType(spec.local.name), imported.accessNode);
+            else {
+              const internal = internalTypes[spec.local.name];
+              if (internal) {
+                exportInternalType(spec.local.name, internal);
+              }
+            }
           }
-
           return;
         }
 
         let declarationObject = null;
+
         if (!node.declaration) return;
         if (node.declaration.type === 'TypeAlias') {
           declarationObject = node.declaration.right;
@@ -695,26 +699,29 @@ module.exports = function flowReactPropTypes(babel) {
         const name = node.declaration.id.name;
         const propTypes = convertNodeToPropTypes(declarationObject);
         internalTypes[name] = propTypes;
+        exportInternalType(name, propTypes);
 
-        const propTypesAst = makePropTypesAstForExport(propTypes);
+        function exportInternalType(name, propTypes) {
+          const propTypesAst = makePropTypesAstForExport(propTypes);
 
-        // create a variable for reuse
-        const exportName = getExportNameForType(name);
-        exportedTypes[name] = exportName;
-        const variableDeclarationAst = t.variableDeclaration(
-          'var',
-          [
-            t.variableDeclarator(
-              t.identifier(exportName),
-              wrapInDceCheck(propTypesAst)
-            )
-          ]
-        );
-        path.insertBefore(variableDeclarationAst);
+          // create a variable for reuse
+          const exportName = getExportNameForType(name);
+          exportedTypes[name] = exportName;
+          const variableDeclarationAst = t.variableDeclaration(
+            'var',
+            [
+              t.variableDeclarator(
+                t.identifier(exportName),
+                wrapInDceCheck(propTypesAst)
+              )
+            ]
+          );
+          path.insertBefore(variableDeclarationAst);
 
-        if (!omitRuntimeTypeExport) {
-          if (path.node[SKIP]) return;
-          addExportTypeDecl(path, exportName);
+          if (!omitRuntimeTypeExport) {
+            if (path.node[SKIP]) return;
+            addExportTypeDecl(path, exportName);
+          }
         }
       },
       ImportDeclaration(path) {

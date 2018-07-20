@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`basic 1`] = `
+"\\"use strict\\";
+
+Object.defineProperty(exports, \\"__esModule\\", {
+  value: true
+});
+exports.bpfrpt_proptype_Test = undefined;
+
+var _propTypes = require(\\"prop-types\\");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var bpfrpt_proptype_Test = {
+  id: _propTypes2.default.string.isRequired
+};
+exports.bpfrpt_proptype_Test = bpfrpt_proptype_Test;"
+`;
