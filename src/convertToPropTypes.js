@@ -167,6 +167,9 @@ export default function convertToPropTypes(node, importedTypes, internalTypes) {
 
     const spreadShape = convertToPropTypes(subnode, importedTypes, internalTypes);
     const properties = spreadShape.properties;
+    if (!properties) {
+      return [];
+    }
 
     // Unless or until the strange default behavior changes in flow (https://github.com/facebook/flow/issues/3214)
     // every property from spread becomes optional unless it uses `...$Exact<T>`
